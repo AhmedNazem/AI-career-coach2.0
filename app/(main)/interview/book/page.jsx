@@ -12,7 +12,7 @@ export default function BookCoachPage() {
     (async function () {
       const cal = await getCalApi();
       cal("ui", {
-        theme: "light",
+        theme: "dark",
         styles: { branding: { brandColor: "#000000" } },
         hideEventTypeDetails: false,
         layout: "month_view"
@@ -29,14 +29,14 @@ export default function BookCoachPage() {
         </Button>
       </Link>
 
-      <div className="max-w-4xl mx-auto mb-8">
+      <div className="max-w-5xl mx-auto mb-8">
         <h1 className="text-5xl font-bold gradient-title">Book a Coaching Session</h1>
         <p className="text-muted-foreground mt-2 text-lg">
           Select an available time slot below to schedule your 1-on-1 mock interview with Ahmed.
         </p>
       </div>
 
-      <Card className="border-primary/20 bg-background overflow-hidden relative min-h-[600px]">
+      <Card className="max-w-5xl mx-auto border-primary/20 bg-background overflow-hidden relative min-h-[600px]">
         <Cal 
           calLink="ahmed-nadhim-3nj9d0"
           style={{ width: "100%", height: "100%", overflow: "scroll" }}

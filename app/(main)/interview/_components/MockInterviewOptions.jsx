@@ -50,7 +50,7 @@ const MockInterviewOptions = () => {
       </Card>
 
       {/* Human Coach Option */}
-      <Card className="hover:border-foreground/20 transition-colors">
+      <Card className="border-blue-500/20 bg-blue-500/5 hover:border-blue-500/40 transition-colors">
         <CardHeader>
           <div>
             <CardTitle className="flex items-center gap-2 text-2xl">
