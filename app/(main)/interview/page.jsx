@@ -3,6 +3,7 @@ import React from "react";
 import StatsCards from "./_components/StatsCards";
 import PerformanceChart from "./_components/PerformanceChart";
 import QuizList from "./_components/QuizList";
+import MockInterviewOptions from "./_components/MockInterviewOptions";
 
 const Interview = async () => {
   const assessments = await getAssessments();
@@ -11,6 +12,9 @@ const Interview = async () => {
       <h1 className="text-6xl font-bold gradient-title mb-5">
         Interview Preparation
       </h1>
+      
+      <MockInterviewOptions />
+
       <div className="space-y-6">
         <StatsCards assessments={assessments} />
         <PerformanceChart assessments={assessments} />
