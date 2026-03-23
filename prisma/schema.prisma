@@ -1,10 +1,14 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CANDIDATE
+  COACH
 }
 
 model User { 
@@ -15,6 +19,7 @@ model User {
   imageUrl      String?
   industry      String?    // Combined industry-subindustry (e.g., "tech-software-development")
   industryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
+  role          Role      @default(CANDIDATE)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

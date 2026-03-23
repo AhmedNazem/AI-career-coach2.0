@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -69,9 +70,11 @@ const MockInterviewOptions = () => {
           </ul>
         </CardContent>
         <CardFooter>
-          <Button variant="outline" className="w-full gap-2">
-            <CalendarDays className="h-4 w-4" />
-            Book a Session
+          <Button variant="outline" className="w-full" asChild>
+            <Link href="/interview/book" className="flex items-center justify-center gap-2">
+              <CalendarDays className="h-4 w-4" />
+              Book a Session
+            </Link>
           </Button>
         </CardFooter>
       </Card>
