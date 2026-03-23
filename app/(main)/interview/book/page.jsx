@@ -17,6 +17,20 @@ export default function BookCoachPage() {
         hideEventTypeDetails: false,
         layout: "month_view"
       });
+
+      // Add success listener
+      cal("on", {
+        action: "bookingSuccessful",
+        callback: (event) => {
+          import("canvas-confetti").then((confetti) => {
+            confetti.default({
+              particleCount: 150,
+              spread: 70,
+              origin: { y: 0.6 },
+            });
+          });
+        },
+      });
     })();
   }, []);
 
