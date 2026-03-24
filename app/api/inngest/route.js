@@ -9,3 +9,4 @@ export const { GET, POST, PUT } = serve({
     generateIndustryInsights,
   ],
 });
+// redeploy trigger
