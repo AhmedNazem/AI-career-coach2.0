@@ -18,7 +18,7 @@ export async function generateQuiz() {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel(
     { model: "gemini-2.5-flash" },
-    { apiVersion: "v1beta" }
+    { apiVersion: "v1beta" },
   );
 
   try {
@@ -26,8 +26,10 @@ export async function generateQuiz() {
       Generate 10 technical interview questions for a ${
         user.industry
       } professional${
-      user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""
-    }.
+        user.skills?.length
+          ? ` with expertise in ${user.skills.join(", ")}`
+          : ""
+      }.
       
       Each question should be multiple choice with 4 options.
       
@@ -71,7 +73,7 @@ export async function saveQuizResult(questions, answers, score) {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   const model = genAI.getGenerativeModel(
     { model: "gemini-2.5-flash" },
-    { apiVersion: "v1beta" }
+    { apiVersion: "v1beta" },
   );
 
   const questionResults = questions.map((q, index) => ({
@@ -89,7 +91,7 @@ export async function saveQuizResult(questions, answers, score) {
     const wrongQuestionsText = wrongAnswers
       .map(
         (q) =>
-          `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`
+          `Question: "${q.question}"\nCorrect Answer: "${q.answer}"\nUser Answer: "${q.userAnswer}"`,
       )
       .join("\n\n");
 
@@ -152,5 +154,58 @@ export async function getAssessments() {
   } catch (error) {
     console.error("Error fetching assessments:", error);
     throw new Error("Failed to fetch assessments");
+  }
+}
+
+export async function saveVoiceInterviewResult(data) {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: clerkId },
+  });
+  if (!user) throw new Error("User not found");
+
+  try {
+    const interview = await db.voiceInterview.create({
+      data: {
+        userId: user.id,
+        transcript: data.transcript || [],
+        strengths: data.strengths || [],
+        weaknesses: data.weaknesses || [],
+        suggestions: data.suggestions || [],
+        score: data.score ? Number(data.score) : 0,
+      },
+    });
+
+    return { success: true, data: interview };
+  } catch (error) {
+    console.error("Prisma Save Error:", error);
+    return { success: false, error: "Failed to save interview result" };
+  }
+}
+
+export async function getVoiceInterviews() {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: clerkId },
+  });
+  if (!user) throw new Error("User not found");
+
+  try {
+    const interviews = await db.voiceInterview.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return interviews;
+  } catch (error) {
+    return [];
   }
 }

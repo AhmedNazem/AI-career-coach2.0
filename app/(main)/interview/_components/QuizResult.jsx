@@ -60,13 +60,13 @@ export default function QuizResult({
         </div>
       </CardContent>
 
-      {!hideStartNew && (
-        <CardFooter>
-          <Button onClick={onStartNew} className="w-full">
+      <CardFooter className="flex gap-4">
+        {!hideStartNew && (
+          <Button onClick={onStartNew} className="flex-1">
             Start New Quiz
           </Button>
-        </CardFooter>
-      )}
+        )}
+      </CardFooter>
     </div>
   );
 }

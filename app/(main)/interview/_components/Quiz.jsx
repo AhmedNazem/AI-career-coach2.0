@@ -16,6 +16,7 @@ import { generateQuiz, saveQuizResult } from "@/actions/interview";
 import QuizResult from "./QuizResult";
 import { BarLoader } from "react-spinners";
 import useFetch from "@/hooks/useFetch";
+import confetti from "canvas-confetti";
 
 export default function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -40,6 +41,16 @@ export default function Quiz() {
       setAnswers(new Array(quizData.length).fill(null));
     }
   }, [quizData]);
+
+  useEffect(() => {
+    if (resultData) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    }
+  }, [resultData]);
 
   const handleAnswer = (answer) => {
     const newAnswers = [...answers];

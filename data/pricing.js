@@ -1,0 +1,47 @@
+export const pricingPlans = [
+  {
+    name: "Basic",
+    price: 0,
+    description: "Get started with AI career coaching",
+    features: [
+      "1 AI Interview Token",
+      "Basic Industry Insights",
+      "Resume Analysis (Once)",
+      "Public Portfolio Page",
+    ],
+    buttonText: "Current Plan",
+    current: true,
+    tier: "FREE",
+  },
+  {
+    name: "Starter",
+    price: 9,
+    description: "Perfect for active job seekers",
+    features: [
+      "5 AI Interview Tokens/mo",
+      "Priority Industry Data",
+      "Unlimited Resume Analysis",
+      "AI Cover Letter Generator",
+      "Priority Email Support",
+    ],
+    buttonText: "Upgrade to Starter",
+    current: false,
+    tier: "STARTER",
+    popular: true,
+  },
+  {
+    name: "Professional",
+    price: 19,
+    description: "Ultimate tools for career growth",
+    features: [
+      "15 AI Interview Tokens/mo",
+      "Real-time Market Analytics",
+      "Advanced AI Mock Interviews",
+      "One-Click Job Applications",
+      "Exclusive Webinars & Tips",
+    ],
+    buttonText: "Upgrade to Pro",
+    current: false,
+    tier: "PRO",
+  },
+];

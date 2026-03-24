@@ -18,9 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { checkUser } from "@/lib/checkUser";
-
 const Header = async () => {
-  await checkUser();
+  const user = await checkUser();
   return (
     <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -35,6 +34,10 @@ const Header = async () => {
         </Link>
         <div className="flex items-center space-x-2 md:space-x-4">
           <SignedIn>
+            <div className="flex items-center gap-2 mr-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+              <StarsIcon className="size-4 text-primary" />
+              <span className="text-sm font-bold text-primary">{user?.tokens || 0}</span>
+            </div>
             <Link href={"/dashboard"}>
               <Button variant="outline">
                 <LayoutDashboard className="size-4" />
@@ -66,10 +69,16 @@ const Header = async () => {
                     <span>Cover Letter</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                 <DropdownMenuItem asChild>
                   <Link href={"/interview"} className="flex items-center gap-2">
                     <GraduationCap className="size-4" />
                     <span>Interview Prep</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href={"/billing"} className="flex items-center gap-2">
+                    <StarsIcon className="size-4" />
+                    <span>Plan & Billing</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
