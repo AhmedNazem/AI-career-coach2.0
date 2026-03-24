@@ -1,11 +1,21 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      });
+    }
+
     const { transcript, userProfile } = await req.json();
 
     if (!transcript) {
-        return new Response(JSON.stringify({ error: "No transcript provided" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "No transcript provided" }), {
+        status: 400,
+      });
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -33,7 +43,9 @@ export async function POST(req) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("AI Response Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to generate AI response" }), { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Failed to generate AI response" }),
+      { status: 500 },
+    );
   }
 }

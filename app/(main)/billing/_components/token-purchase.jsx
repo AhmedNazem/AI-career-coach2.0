@@ -12,13 +12,13 @@ export default function TokenPurchase({ amount, price, label }) {
     setLoading(true);
     try {
       const result = await createCheckoutSession("TOKENS", amount.toString());
-      if (result.url) {
+      if (result.success) {
         window.location.href = result.url;
       } else {
-        toast.error("Failed to create checkout session");
+        toast.error(result.error || "Failed to create checkout session");
       }
     } catch (error) {
-      toast.error(error.message || "An unexpected error occurred");
+      toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);
     }

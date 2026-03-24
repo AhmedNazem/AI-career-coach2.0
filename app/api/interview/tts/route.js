@@ -1,5 +1,12 @@
+import { auth } from "@clerk/nextjs/server";
+
 export async function POST(req) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
     const { text } = await req.json();
 
     if (!process.env.ELEVENLABS_API_KEY) {
@@ -28,8 +35,6 @@ export async function POST(req) {
     const preferredVoice = voices.find(v => v.name === "Rachel" || v.name === "Adam") || voices[0];
     const voiceId = preferredVoice.voice_id;
 
-    console.log(`Using ElevenLabs Voice: ${preferredVoice.name} (${voiceId})`);
-
     // 2. Perform TTS
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_44100_128`,
@@ -52,7 +57,6 @@ export async function POST(req) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("ElevenLabs Error Details:", errorText);
       throw new Error(
         `ElevenLabs API failure: ${response.status} ${errorText}`,
       );
@@ -64,7 +68,6 @@ export async function POST(req) {
       headers: { "Content-Type": "audio/mpeg" },
     });
   } catch (error) {
-    console.error("TTS Route Error:", error);
     return new Response(JSON.stringify({ error: "TTS Failed" }), {
       status: 500,
     });

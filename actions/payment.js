@@ -82,10 +82,9 @@ export async function createCheckoutSession(type, id) {
       customer_email: user.email,
     });
 
-    return { url: session.url };
+    return { success: true, url: session.url };
   } catch (error) {
-    console.error("Stripe Session Error:", error);
-    throw new Error("Failed to create payment session");
+    return { success: false, error: "Failed to create payment session" };
   }
 }
 
@@ -115,7 +114,6 @@ export async function deductToken() {
 
     return { success: true, remainingTokens: updatedUser.tokens };
   } catch (error) {
-    console.error("Error deducting token:", error.message);
     return { success: false, error: "Failed to start interview" };
   }
 }
