@@ -17,7 +17,7 @@ export default function VoiceStart({ loading, tokens, onStart }) {
         onClick={onStart} 
         disabled={loading || tokens < 1} 
         size="lg" 
-        className="rounded-full px-12 h-14 text-lg font-bold shadow-xl flex gap-2"
+        className="rounded-full px-12 h-14 text-lg font-bold shadow-xl flex items-center justify-center gap-2 w-full max-w-sm mx-auto"
       >
         {loading ? <Loader2 className="animate-spin" /> : <Play className="size-5 fill-current" />}
         {loading ? "Preparing AI..." : "Begin Professional Session"}

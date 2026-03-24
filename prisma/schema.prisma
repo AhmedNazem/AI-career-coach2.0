@@ -19,20 +19,21 @@ enum SubscriptionTier {
 
 model User { 
   id            String    @id @default(uuid())
-  clerkUserId   String    @unique // clerk user id
+  clerkUserId   String    @unique
   email         String    @unique
   name          String?
   imageUrl      String?
-  industry      String?    // Combined industry-subindustry (e.g., "tech-software-development")
+  industry      String?
   industryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
   bio           String?
-  experience    Int?      // Years of experience
+  experience    Int?
 
   // Relations
-  skills        String[]  // Array of skills
+  skills        String[]
   assessments   Assessment[]
   resume        Resume?
   coverLetter   CoverLetter[]
+  voiceInterviews VoiceInterview[]
 
   // SaaS Fields
   tokens        Int              @default(1)
@@ -49,10 +50,10 @@ model Assessment {
   id            String    @id @default(cuid())
   userId        String
   user          User      @relation(fields: [userId], references: [id])
-  quizScore     Float     // Overall quiz score
-  questions     Json[]    // Array of {question, answer, userAnswer, isCorrect}
-  category      String    // "Technical", "Behavioral", etc.
-  improvementTip String?  // AI-generated improvement tip
+  quizScore     Float
+  questions     Json[]
+  category      String
+  improvementTip String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -61,9 +62,9 @@ model Assessment {
 
 model Resume {
   id          String    @id @default(cuid())
-  userId      String    @unique    // One resume per user
+  userId      String    @unique
   user        User      @relation(fields: [userId], references: [id])
-  content     String    @db.Text // Markdown content
+  content     String    @db.Text
   atsScore    Float?
   feedback    String?
   createdAt   DateTime  @default(now())
@@ -74,42 +75,45 @@ model CoverLetter {
   id              String    @id @default(cuid())
   userId          String
   user            User      @relation(fields: [userId], references: [id])
-  content         String    // Markdown content
+  content         String
   jobDescription  String?
-  companyName     String    // Name of the company applying to
-  jobTitle        String    // Position applying for
-  status          String    @default("draft") // draft, completed
+  companyName     String
+  jobTitle        String
+  status          String    @default("draft")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@index([userId])
 }
 
-// Combined Industry Trends and Salary Insights
 model IndustryInsight {
   id            String    @id @default(cuid())
-  industry      String    @unique  // The industry this data belongs to (e.g., "tech-software-development")
-  
-  // Users in this industry
+  industry      String    @unique
   users         User[]
-  
-  // Salary data
-  salaryRanges  Json[]    // Array of { role: string, min: float, max: float, median: float, location: string? }
-  
-  // Industry trends
-  growthRate    Float     // Industry growth rate
-  demandLevel   String    // "High", "Medium", "Low"
-  topSkills     String[]  // Most in-demand skills
-  
-  // Market conditions
-  marketOutlook String    // "Positive", "Neutral", "Negative"
-  keyTrends     String[]  // Array of current industry trends
-  
-  // Learning suggestions
-  recommendedSkills String[]  // Skills recommended for the industry
-  
+  salaryRanges  Json[]
+  growthRate    Float
+  demandLevel   String
+  topSkills     String[]
+  marketOutlook String
+  keyTrends     String[]
+  recommendedSkills String[]
   lastUpdated   DateTime  @default(now())
-  nextUpdate    DateTime  // Scheduled update time
+  nextUpdate    DateTime
 
   @@index([industry])
+}
+
+model VoiceInterview {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  transcript    Json[]    // Array of { role: "user" | "ai", text: string }
+  strengths     String[]
+  weaknesses    String[]
+  suggestions   String[]
+  score         Int?      // 0-100
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
 }

@@ -7,10 +7,12 @@ import { Mic, MicOff, Play, Square, Loader2, Zap, PhoneOff } from "lucide-react"
 import { deductToken } from "@/actions/payment";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { saveVoiceInterviewResult } from "@/actions/interview";
 
 import AudioVisualizer from "./audio-visualizer";
 import StatusCard from "./status-card";
 import VoiceStart from "./voice-start";
+import InterviewResult from "./interview-result";
 
 export default function VoiceInterface({ user }) {
   const [isStarted, setIsStarted] = useState(false);
@@ -20,6 +22,9 @@ export default function VoiceInterface({ user }) {
   const [status, setStatus] = useState("Ready to start your interview");
   const [transcript, setTranscript] = useState("");
   const [lastAiResponse, setLastAiResponse] = useState("");
+  const [conversation, setConversation] = useState([]);
+  const [result, setResult] = useState(null);
+  const [showResult, setShowResult] = useState(false);
   
   const router = useRouter();
   const recognitionRef = useRef(null);
@@ -37,10 +42,50 @@ export default function VoiceInterface({ user }) {
     setIsStarted(false);
     setIsRecording(false);
     setIsSpeaking(false);
-    setTranscript("");
-    setLastAiResponse("");
-    setStatus("Interview session ended.");
-    toast.success("Interview finished!");
+    setStatus("Analyzing your interview...");
+    
+    // Evaluate the interview
+    evaluateInterview();
+  };
+
+  const evaluateInterview = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/interview/evaluate", {
+        method: "POST",
+        body: JSON.stringify({ 
+          messages: conversation, 
+          userProfile: { industry: user?.industry, skills: user?.skills, experience: user?.experience } 
+        }),
+      });
+      const evalData = await response.json();
+      if (evalData.error) throw new Error(evalData.error);
+      
+      // Pre-process data for safety
+      const cleanData = {
+        transcript: conversation || [],
+        strengths: evalData.strengths || [],
+        weaknesses: evalData.weaknesses || [],
+        suggestions: evalData.suggestions || [],
+        score: Number(evalData.score) || 0,
+      };
+
+      // Save to DB
+      const saveResult = await saveVoiceInterviewResult(cleanData);
+
+      if (saveResult.success) {
+        setResult(evalData);
+        setShowResult(true);
+        toast.success("Analysis complete! Review your results below.");
+      } else {
+        throw new Error(saveResult.error);
+      }
+    } catch (e) {
+      toast.error("Evaluation failed: " + e.message);
+      setStatus("Error generating report.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -74,6 +119,7 @@ export default function VoiceInterface({ user }) {
       if (result.success) {
         setIsStarted(true);
         setStatus("Interviewer is speaking...");
+        setConversation([{ role: "ai", content: greeting }]);
         toast.success("Interview started! 1 token deducted.");
         const audioBlob = await ttsResponse.blob();
         playAudio(URL.createObjectURL(audioBlob));
@@ -93,7 +139,10 @@ export default function VoiceInterface({ user }) {
   };
 
   const processResponse = async (text) => {
-    setLoading(true); setStatus("AI is thinking...");
+    setLoading(true); 
+    setStatus("AI is thinking...");
+    setConversation(prev => [...prev, { role: "user", content: text }]);
+    
     try {
       const response = await fetch("/api/interview/ai-response", {
         method: "POST",
@@ -101,11 +150,25 @@ export default function VoiceInterface({ user }) {
       });
       const data = await response.json();
       if (data.error) throw new Error(data.error);
-      setLastAiResponse(data.answer); setStatus("AI is speaking...");
+      
+      setLastAiResponse(data.answer); 
+      setStatus("AI is speaking...");
+      setConversation(prev => [...prev, { role: "ai", content: data.answer }]);
+      
       const tts = await fetch("/api/interview/tts", { method: "POST", body: JSON.stringify({ text: data.answer }) });
       if (tts.ok) playAudio(URL.createObjectURL(await tts.blob()));
     } catch (e) { toast.error("AI Error: " + e.message); setStatus("Error processing voice."); } finally { setLoading(false); }
   };
+
+  if (showResult && result) {
+    return <InterviewResult result={result} user={user} onReset={() => {
+        setShowResult(false);
+        setConversation([]);
+        setTranscript("");
+        setLastAiResponse("");
+        setStatus("Ready to start your interview");
+    }} />;
+  }
 
   return (
     <Card className="max-w-2xl mx-auto border-primary/20 bg-card/50 backdrop-blur-xl shadow-2xl relative overflow-hidden">
@@ -129,13 +192,13 @@ export default function VoiceInterface({ user }) {
                     <p className="text-sm text-foreground italic">"{transcript}"</p>
                 </div>
             )}
-            <div className="flex justify-center items-center gap-12 w-full">
+            <div className="flex justify-center items-center gap-12 w-full max-w-sm mx-auto">
                  <button 
                    onClick={handleEndCall}
-                   className="size-20 rounded-full bg-red-600/10 hover:bg-red-600/20 border-2 border-red-600/20 flex items-center justify-center transition-all group shrink-0"
+                   className="size-16 rounded-full bg-red-600/10 hover:bg-red-600/20 border-2 border-red-600/20 flex items-center justify-center transition-all group shrink-0"
                    title="End Call"
                  >
-                    <PhoneOff className="size-8 text-red-600 group-hover:scale-110 transition-transform" />
+                    <PhoneOff className="size-6 text-red-600 group-hover:scale-110 transition-transform" />
                  </button>
 
                  <button onClick={() => {
@@ -150,8 +213,6 @@ export default function VoiceInterface({ user }) {
                     disabled={loading} className={`size-24 rounded-full shadow-2xl transition-all flex items-center justify-center cursor-pointer select-none ring-offset-4 ring-offset-background shrink-0 ${isRecording ? "bg-red-500 ring-4 ring-red-500/20 scale-110" : "bg-primary hover:bg-primary/90 shadow-primary/20 hover:scale-105"} ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>
                     {isRecording ? <MicOff className="size-10 text-white" /> : <Mic className="size-10 text-white" />}
                  </button>
-
-                 <div className="size-20 opacity-0 pointer-events-none hidden md:block" /> {/* Symmetry spacer */}
             </div>
             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">{isRecording ? "Recording..." : "Click microphone to answer"}</p>
           </div>
