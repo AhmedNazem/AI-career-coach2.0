@@ -12,7 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bot, CalendarDays, Zap } from "lucide-react";
 
-const MockInterviewOptions = () => {
+const MockInterviewOptions = ({ user }) => {
+  const hasTokens = user?.tokens > 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
       {/* AI Interview Option */}
@@ -28,7 +30,10 @@ const MockInterviewOptions = () => {
                 Real-time conversational voice interview with our advanced AI.
               </CardDescription>
             </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
+            <Badge
+              variant="secondary"
+              className="bg-primary/10 text-primary hover:bg-primary/20"
+            >
               <Zap className="h-3 w-3 mr-1" />
               Premium
             </Badge>
@@ -36,15 +41,36 @@ const MockInterviewOptions = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-            <li className="flex items-center gap-2">✓ 15-minute live voice session</li>
-            <li className="flex items-center gap-2">✓ Instant actionable feedback</li>
-            <li className="flex items-center gap-2">✓ Cost: 1 Interview Token</li>
+            <li className="flex items-center gap-2">
+              ✓ 15-minute live voice session
+            </li>
+            <li className="flex items-center gap-2">
+              ✓ Instant actionable feedback
+            </li>
+            <li className="flex items-center gap-2">
+              ✓ Cost: 1 Interview Token
+            </li>
+            {!hasTokens && (
+              <li className="text-destructive font-bold flex items-center gap-2">
+                ⚠️ Zero tokens remaining
+              </li>
+            )}
           </ul>
         </CardContent>
         <CardFooter>
-          <Button className="w-full gap-2">
-            <Zap className="h-4 w-4" />
-            Start AI Interview (1 Token)
+          <Button
+            className="w-full gap-2"
+            disabled={!hasTokens}
+            asChild={hasTokens}
+          >
+            {hasTokens ? (
+              <Link href="/interview/voice">
+                <Zap className="h-4 w-4" />
+                Start AI Interview (1 Token)
+              </Link>
+            ) : (
+              <Link href="/billing">Get More Tokens</Link>
+            )}
           </Button>
         </CardFooter>
       </Card>
@@ -64,14 +90,23 @@ const MockInterviewOptions = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-            <li className="flex items-center gap-2">✓ 30-minute Google Meet link</li>
-            <li className="flex items-center gap-2">✓ Personalized industry advice</li>
-            <li className="flex items-center gap-2">✓ Subject to coach availability</li>
+            <li className="flex items-center gap-2">
+              ✓ 30-minute Google Meet link
+            </li>
+            <li className="flex items-center gap-2">
+              ✓ Personalized industry advice
+            </li>
+            <li className="flex items-center gap-2">
+              ✓ Subject to coach availability
+            </li>
           </ul>
         </CardContent>
         <CardFooter>
           <Button variant="outline" className="w-full" asChild>
-            <Link href="/interview/book" className="flex items-center justify-center gap-2">
+            <Link
+              href="/interview/book"
+              className="flex items-center justify-center gap-2"
+            >
               <CalendarDays className="h-4 w-4" />
               Book a Session
             </Link>

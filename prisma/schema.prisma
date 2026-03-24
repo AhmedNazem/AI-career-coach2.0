@@ -11,6 +11,12 @@ enum Role {
   COACH
 }
 
+enum SubscriptionTier {
+  FREE
+  STARTER
+  PRO
+}
+
 model User { 
   id            String    @id @default(uuid())
   clerkUserId   String    @unique // clerk user id
@@ -19,19 +25,24 @@ model User {
   imageUrl      String?
   industry      String?    // Combined industry-subindustry (e.g., "tech-software-development")
   industryInsight IndustryInsight? @relation(fields: [industry], references: [industry])
-  role          Role      @default(CANDIDATE)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Profile fields
   bio           String?
   experience    Int?      // Years of experience
-  
+
   // Relations
   skills        String[]  // Array of skills
   assessments   Assessment[]
   resume        Resume?
   coverLetter   CoverLetter[]
+
+  // SaaS Fields
+  tokens        Int              @default(1)
+  subscription  SubscriptionTier @default(FREE)
+  stripeCustomerId String?       @unique
+
+  // User Status
+  role          Role      @default(CANDIDATE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Assessment {
