@@ -8,9 +8,8 @@ import CoverLetterPreview from "../_components/CoverLetterPreview";
 
 // Fetch cover letter content based on the provided id
 const CoverLetter = async ({ params }) => {
-  // Assuming params contains { id: "some-id" }
-  const { id } = params; // Use object destructuring to get the id
-  const coverLetter = await getCoverLetter(id);
+  const { id } = await params;
+  const { data: coverLetter } = await getCoverLetter(id);
 
   return (
     <div className="container mx-auto py-6">

@@ -60,27 +60,31 @@ export async function updateUser(data) {
       { timeout: 15000 }, // Extended timeout for safety
     );
 
-    return { success: true, ...result };
+    return { success: true, data: result };
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
-    throw new Error("Failed to update profile");
+    return { success: false, error: "Failed to update profile" };
   }
 }
 
 export async function getUserOnboardingStatus() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
 
-  let user = await db.user.findUnique({
-    where: { clerkUserId: userId },
-    select: { industry: true },
-  });
+    let user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+      select: { industry: true },
+    });
 
-  if (!user) {
-    user = await checkUser();
+    if (!user) {
+      user = await checkUser();
+    }
+
+    if (!user) throw new Error("User not found");
+
+    return { success: true, data: { isOnboarded: !!user.industry } };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
-
-  if (!user) throw new Error("User not found");
-
-  return { isOnboarded: !!user.industry };
 }

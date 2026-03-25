@@ -6,7 +6,8 @@ import CoverLetterList from "./_components/CoverLetterList";
 import { getCoverLetters } from "@/actions/coverLetter";
 
 const AiCoverLetter = async () => {
-  const coverLetters = await getCoverLetters();
+  const { data: coverLetters = [] } = await getCoverLetters();
+
   return (
     <div>
       <div className="flex flex-col md:flex-row gap-2 items-center justify-between mb-5">

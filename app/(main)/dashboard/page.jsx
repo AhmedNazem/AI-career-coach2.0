@@ -5,13 +5,13 @@ import React from "react";
 import DashboardView from "./_components/DashboardView";
 
 const IndustryInsights = async () => {
-  const { isOnboarded } = await getUserOnboardingStatus();
+  const { data: onboardingStatus } = await getUserOnboardingStatus();
 
-  if (!isOnboarded) {
+  if (!onboardingStatus?.isOnboarded) {
     redirect("/onboarding");
   }
 
-  const insights = await getIndustryInsights();
+  const { data: insights } = await getIndustryInsights();
 
   return (
     <div className="container mx-auto">

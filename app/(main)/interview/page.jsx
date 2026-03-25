@@ -9,8 +9,8 @@ import { checkUser } from "@/lib/checkUser";
 import { getVoiceInterviews } from "@/actions/interview";
 
 const Interview = async () => {
-  const assessments = await getAssessments();
-  const voiceInterviews = await getVoiceInterviews();
+  const { data: assessments = [] } = await getAssessments();
+  const { data: voiceInterviews = [] } = await getVoiceInterviews();
   const user = await checkUser();
 
   return (

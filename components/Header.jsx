@@ -9,6 +9,8 @@ import {
   GraduationCap,
   LayoutDashboard,
   PenBox,
+  Search,
+  Briefcase,
   StarsIcon,
 } from "lucide-react";
 import {
@@ -79,6 +81,20 @@ const Header = async () => {
                   <Link href={"/billing"} className="flex items-center gap-2">
                     <StarsIcon className="size-4" />
                     <span>Plan & Billing</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href={"/jobs"} className="flex items-center gap-2">
+                    <Search className="size-4" />
+                    <span>Jobs Board</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href={"/tracker"} className="flex items-center gap-2">
+                    <Briefcase className="size-4" />
+                    <span>Job Tracker</span>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -34,6 +34,7 @@ model User {
   resume        Resume?
   coverLetter   CoverLetter[]
   voiceInterviews VoiceInterview[]
+  jobApplications JobApplication[]
 
   // SaaS Fields
   tokens        Int              @default(1)
@@ -101,6 +102,34 @@ model IndustryInsight {
   nextUpdate    DateTime
 
   @@index([industry])
+}
+
+enum JobStatus {
+  WISHLIST
+  APPLIED
+  INTERVIEWING
+  OFFER
+  REJECTED
+}
+
+model JobApplication {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  jobId           String?   // External ID from Job Search API
+  title           String
+  company         String
+  location        String?
+  status          JobStatus @default(WISHLIST)
+  description     String?   @db.Text
+  url             String?
+  matchScore      Int?
+  matchFeedback   String?
+  appliedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 model VoiceInterview {

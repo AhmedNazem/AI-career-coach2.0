@@ -26,29 +26,36 @@ export async function saveResume(content) {
     });
 
     revalidatePath("/resume");
-    return resume;
+    return { success: true, data: resume };
   } catch (error) {
     console.error("Error saving resume:", error);
-    throw new Error("Failed to save resume. Please try again later.");
+    return { success: false, error: error.message };
   }
 }
 
 export async function getResume() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
 
-  const user = await db.user.findUnique({
-    where: {
-      clerkUserId: userId,
-    },
-  });
-  if (!user) throw new Error("User not found");
+    const user = await db.user.findUnique({
+      where: {
+        clerkUserId: userId,
+      },
+    });
+    if (!user) throw new Error("User not found");
 
-  return await db.resume.findUnique({
-    where: {
-      userId: user.id,
-    },
-  });
+    const resume = await db.resume.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return { success: true, data: resume };
+  } catch (error) {
+    console.error("Error fetching resume:", error);
+    return { success: false, error: error.message };
+  }
 }
 
 export async function improveWithAI({ current, type }) {
@@ -82,9 +89,9 @@ export async function improveWithAI({ current, type }) {
     const result = await model.generateContent(prompt);
     const response = result.response;
     const improvedContent = response.text().trim();
-    return improvedContent;
+    return { success: true, data: improvedContent };
   } catch (error) {
-    console.error("Error improving the content", error.message);
-    throw new Error("Failed to improve content");
+    console.error("Error improving the content:", error.message);
+    return { success: false, error: "Failed to improve content" };
   }
 }

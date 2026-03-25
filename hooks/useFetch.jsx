@@ -11,8 +11,19 @@ const useFetch = (cb) => {
     setError(null);
     try {
       const response = await cb(...args);
-      setData(response);
-      setError(null);
+      if (response && typeof response === "object" && "success" in response) {
+        if (response.success) {
+          setData(response.data);
+          setError(null);
+        } else {
+          setError(new Error(response.error));
+          toast.error(response.error);
+        }
+      } else {
+        // Backward compatibility for non-standardized actions
+        setData(response);
+        setError(null);
+      }
     } catch (error) {
       setError(error);
       toast.error(error.message);

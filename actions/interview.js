@@ -52,10 +52,10 @@ export async function generateQuiz() {
     const cleanText = text.replace(/```(?:json)?\n?/g, "").trim();
 
     const quiz = JSON.parse(cleanText);
-    return quiz.questions;
+    return { success: true, data: quiz.questions };
   } catch (error) {
     console.error("Error generating quiz:", error);
-    throw new Error("Failed to generate quiz questions");
+    return { success: false, error: "Failed to generate quiz questions" };
   }
 }
 
@@ -126,10 +126,10 @@ export async function saveQuizResult(questions, answers, score) {
       },
     });
 
-    return assessment;
+    return { success: true, data: assessment };
   } catch (error) {
     console.error("Error saving quiz result:", error);
-    throw new Error("Failed to save quiz result");
+    return { success: false, error: "Failed to save quiz result" };
   }
 }
 
@@ -150,10 +150,10 @@ export async function getAssessments() {
         createdAt: "asc",
       },
     });
-    return assessments;
+    return { success: true, data: assessments };
   } catch (error) {
     console.error("Error fetching assessments:", error);
-    throw new Error("Failed to fetch assessments");
+    return { success: false, error: "Failed to fetch assessments" };
   }
 }
 
@@ -204,8 +204,8 @@ export async function getVoiceInterviews() {
       },
     });
 
-    return interviews;
+    return { success: true, data: interviews };
   } catch (error) {
-    return [];
+    return { success: false, error: "Failed to fetch interviews" };
   }
 }
