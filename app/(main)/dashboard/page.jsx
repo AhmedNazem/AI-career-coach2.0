@@ -5,13 +5,21 @@ import React from "react";
 import DashboardView from "./_components/DashboardView";
 
 const IndustryInsights = async () => {
-  const { data: onboardingStatus } = await getUserOnboardingStatus();
+  const onboardingResponse = await getUserOnboardingStatus();
+  if (!onboardingResponse.success)
+    throw new Error(
+      onboardingResponse.error || "Failed to get onboarding status",
+    );
+  const onboardingStatus = onboardingResponse.data;
 
   if (!onboardingStatus?.isOnboarded) {
     redirect("/onboarding");
   }
 
-  const { data: insights } = await getIndustryInsights();
+  const result = await getIndustryInsights();
+  if (!result.success)
+    throw new Error(result.error || "Failed to load industry insights");
+  const insights = result.data;
 
   return (
     <div className="container mx-auto">

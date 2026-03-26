@@ -5,7 +5,10 @@ import { getUserOnboardingStatus } from "@/actions/user";
 import { redirect } from "next/navigation";
 
 const OnBoarding = async () => {
-  const { data } = await getUserOnboardingStatus();
+  const result = await getUserOnboardingStatus();
+  if (!result.success) throw new Error(result.error || "Failed to check onboarding status");
+  const data = result.data;
+
   if (data?.isOnboarded) {
     redirect("/dashboard");
   }

@@ -10,16 +10,7 @@ export default async function RoadmapPage() {
   const result = await getUserRoadmap();
 
   if (!result.success) {
-    return (
-      <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent mb-8">
-          Personalized Career Roadmap
-        </h1>
-        <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-lg">
-          {result.error}
-        </div>
-      </div>
-    );
+    throw new Error(result.error || "Failed to load roadmap");
   }
 
   const roadmap = result.data;

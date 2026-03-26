@@ -6,7 +6,8 @@ import Link from "next/link";
 
 export default async function TrackerPage() {
   const result = await getJobApplications();
-  const applications = result.success ? result.data : [];
+  if (!result.success) throw new Error(result.error || "Failed to load applications");
+  const applications = result.data || [];
 
   return (
     <div className="container mx-auto py-10 px-4">
