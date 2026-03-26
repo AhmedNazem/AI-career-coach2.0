@@ -33,6 +33,12 @@ export default function RoadmapHeader({ roadmap }) {
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Regenerate Career Roadmap</DialogTitle>
+              <DialogDescription>
+                Update your career goal to generate a new personalized learning path.
+              </DialogDescription>
+            </DialogHeader>
             <RoadmapForm />
           </DialogContent>
         </Dialog>
