@@ -5,6 +5,8 @@ import React from "react";
 import CoverLetterList from "./_components/CoverLetterList";
 import { getCoverLetters } from "@/actions/coverLetter";
 
+export const dynamic = "force-dynamic";
+
 const AiCoverLetter = async () => {
   const { data: coverLetters = [] } = await getCoverLetters();
 

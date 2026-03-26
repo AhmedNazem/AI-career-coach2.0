@@ -4,6 +4,8 @@ import OnboardingForm from "./_components/OnboardingForm";
 import { getUserOnboardingStatus } from "@/actions/user";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 const OnBoarding = async () => {
   const result = await getUserOnboardingStatus();
   if (!result.success) throw new Error(result.error || "Failed to check onboarding status");
