@@ -12,6 +12,7 @@ import {
   Search,
   Briefcase,
   StarsIcon,
+  Map,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -38,7 +39,9 @@ const Header = async () => {
           <SignedIn>
             <div className="flex items-center gap-2 mr-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
               <StarsIcon className="size-4 text-primary" />
-              <span className="text-sm font-bold text-primary">{user?.tokens || 0}</span>
+              <span className="text-sm font-bold text-primary">
+                {user?.tokens || 0}
+              </span>
             </div>
             <Link href={"/dashboard"}>
               <Button variant="outline">
@@ -71,7 +74,7 @@ const Header = async () => {
                     <span>Cover Letter</span>
                   </Link>
                 </DropdownMenuItem>
-                 <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild>
                   <Link href={"/interview"} className="flex items-center gap-2">
                     <GraduationCap className="size-4" />
                     <span>Interview Prep</span>
@@ -81,6 +84,13 @@ const Header = async () => {
                   <Link href={"/billing"} className="flex items-center gap-2">
                     <StarsIcon className="size-4" />
                     <span>Plan & Billing</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href={"/roadmap"} className="flex items-center gap-2">
+                    <Map className="size-4" />
+                    <span>Career Roadmap</span>
                   </Link>
                 </DropdownMenuItem>
 

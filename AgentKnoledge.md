@@ -71,23 +71,5 @@ The user inputs their "Goal". Gemini analyzes their current Prisma profile skill
 
 ---
 
-## 🌐 4. Public Portfolio Builder (1-Click Website)
-
-A resume is great, but a live personal website stands out to recruiters.
-
-### **How it works:**
-
-With one click, your app takes the User's Bio, Experience, Skills, and AI-generated Resume, and publishes a beautiful webpage (e.g., `career-coach.com/p/john-doe`).
-
-### **Implementation Steps:**
-
-1.  **Next.js Dynamic Routing:** Create a new folder at `app/[username]/page.jsx` for public, SEO-friendly portfolio rendering.
-2.  **Database:** Add a `slug String @unique` to the `User` model to reserve their custom URL.
-3.  **Image Hosting:** Add **UploadThing** or **Vercel Blob** so they can upload a professional headshot without bloating the database.
-
----
-
-### 💡 Where should we start?
-
 - If you want to start generating revenue early, we should build **Feature 1 (Paid AI Voice Interview + Payment API)**.
 - If you want to maximize daily user engagement, we should build **Feature 2 (The internal Job Board + Drag & Drop Tracker)** first.
