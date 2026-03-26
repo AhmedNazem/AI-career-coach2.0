@@ -64,10 +64,67 @@ Users often know their dream role (e.g., "Senior React Developer") but need a pa
 
 The user inputs their "Goal". Gemini analyzes their current Prisma profile skills and generates a 6-month visual roadmap with recommended YouTube courses or links.
 
-### **Implementation Steps:**
+### **Implementation Steps (Completed):**
 
-1.  **UI:** Use **`React Flow`** (`@xyflow/react`) to build an interactive, draggable visual flowchart for the roadmap.
-2.  **Backend:** Write a new server action in `actions/roadmap.js` that calls Gemini to generate a structured JSON array of "milestones" and saves it to a new `Roadmap` Prisma model.
+1.  **UI:** Built using **`React Flow`** (`@xyflow/react`) for an interactive, draggable flowchart. Milestone nodes are custom components.
+2.  **Backend:** Implemented in `actions/roadmap.js`. Gemini generates a structured JSON array of milestones based on user goals and industry trends.
+3.  **Data Persistence:** Roadmaps are saved in the `Roadmap` Prisma model, ensuring users can return to their path anytime.
+
+---
+
+## 🔐 4. Standard AI & Server Action Patterns
+
+To keep the application robust, all new features MUST follow these established patterns:
+
+### **A. Standard API Response Pattern**
+All Server Actions must return a consistent object structure:
+```javascript
+{
+  success: true/false,
+  data: resultData,    // Only if success is true
+  error: "Error Message" // Only if success is false
+}
+```
+
+### **B. Gemini Prompting & JSON Safety**
+When requesting JSON from Gemini:
+1.  **Explicit Prompting:** Requesting "ONLY RAW JSON" without markdown backticks.
+2.  **Sanitization:** Use `response.replace(/```json|```/g, "").trim()` before parsing.
+3.  **Validation:** Use **Zod** schema validation immediately after parsing to ensure result integrity.
+
+### **C. Background Jobs (Inngest)**
+For tasks that take > 10 seconds or are triggered by events (e.g., weekly reminders):
+- Use `lib/inngest/client.js` to define events.
+- Create functions in `app/api/inngest/route.js`.
+
+---
+
+## 🔍 5. SEO & Search Optimization
+
+To ensure the product is discoverable, we follow these technical SEO patterns:
+
+### **A. Global Metadata Strategy**
+Configure the root `layout.jsx` with dynamic title templates and OpenGraph images:
+```javascript
+export const metadata = {
+  title: { default: "Sensai", template: "%s | Sensai" },
+  openGraph: { images: ["/logo.png"] },
+};
+```
+
+### **B. Automated Indexing**
+- **`app/sitemap.js`**: Generates a dynamic XML sitemap of all public-facing routes.
+- **`app/robots.js`**: Instructs search engines on which paths to crawl (allowing all except `/api` and internal auth).
+
+---
+
+## 🌐 6. Deployment & Self-Hosting (Nginx)
+
+For custom server deployments (VPS), we use a high-performance stack:
+
+1.  **Process Management (PM2):** Keeps the Node.js process alive and handles reboots.
+2.  **Reverse Proxy (Nginx):** Handles SSL (via Certbot), buffers requests, and serves static files from `.next/static`.
+3.  **Security Headers:** Nginx adds `X-Frame-Options` and `X-Content-Type-Options` to protect users.
 
 ---
 

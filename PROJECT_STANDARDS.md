@@ -85,9 +85,43 @@ career-coach/
 
 1.  **Never trust the client**: Only issue "Tokens" or "Premium access" to a user when your backend Server Action or a secure `/api/webhook` verifies a successful payment payload from the payment provider (ZainCash, FIB, Stripe).
 
-### G. Senior Full-Stack Scalability & Clean Code
+## 🚀 3. Production Deployment & Security Standards
 
-1.  **Maximum File Size Constraint**: No UI file (`page.jsx`, `component.jsx`) should exceed **150 lines of code**. If a file grows larger than this, its internal sections _must_ be broken down into smaller, focused child components.
-2.  **The "Rule of Two" for Reusability**: If UI code, a layout pattern, or a utility function is going to be used **twice**, it must immediately be extracted into a reusable, generic component (inside `components/`) or a helper function (inside `lib/`).
-3.  **Single Responsibility Principle (SRP)**: Each component should do _one_ thing. Separate large pages into a Data Fetching wrapper pattern and a pure UI presentation component.
-4.  **Scalable Architecture**: Keep the global `components/` folder for generic, app-wide UI (like Buttons or Cards). Use feature-specific `_components/` folders inside route directories (e.g., `app/(main)/jobs/_components/`) for UI pieces that only apply to one specific feature.
+### A. Environment & Infrastructure
+1.  **Infrastructure**: Vercel is the primary deployment platform. Use `Neon` for PostgreSQL to handle serverless scaling.
+2.  **CI/CD**: All changes must pass through a Pull Request. Automated builds in Vercel must succeed before merging.
+3.  **Environment Variables**: Never hardcode secrets. Use Vercel's Environment Variables for production keys (Clerk, Gemini, Stripe, Deepgram).
+
+### B. Scalability & Performance
+1.  **Caching**: Use Next.js `unstable_cache` or `revalidatePath` for data that doesn't change frequently.
+2.  **Asset Optimization**: Use `next/image` for all images to ensure automatic resizing and WebP conversion.
+3.  **Streaming**: Implement React `Suspense` with Skeletons for AI-generated content to improve perceived performance.
+
+### C. Security Hardening
+1.  **Rate Limiting**: Critical endpoints (AI generation, Auth) must be protected by rate limiting (e.g., Upstash Redis).
+2.  **Input Sanitization**: All user inputs must be validated using **Zod** schemas before processing.
+3.  **CORS & CSRF**: Next.js Server Actions automatically handle CSRF, but public API routes must explicitly define allowed origins.
+
+---
+
+## 🛠️ 4. Maintenance & Monitoring
+1.  **Error Tracking**: Integrate **Sentry** to monitor production crashes and performance bottlenecks.
+2.  **Logging**: Use **Logtail** or Vercel Logs to track Server Action execution and AI latency.
+3.  **Database Backups**: Enable auto-backups in Neon/Supabase to prevent data loss.
+---
+
+## 🔍 5. SEO & Search Integrity Standards
+
+### A. Mandatory Metadata
+1.  **Every Page Layout**: Every public `page.jsx` or layout must export a `metadata` object or `generateMetadata` function.
+2.  **Semantic Titles**: Titles should be < 60 characters and include primary keywords (e.g., "AI Career Roadmap | Sensai").
+3.  **Descriptive Descriptions**: Descriptions should be < 160 characters and provide a clear value proposition.
+
+### B. Social Sharing (OpenGraph & Twitter)
+1.  **Global OG**: The root `layout.jsx` must define default `openGraph` and `twitter` card properties.
+2.  **Feature Images**: Use dynamic OG images for features like `Roadmaps` or `Job Reports` whenever possible.
+
+### C. Technical SEO
+1.  **Hydration Awareness**: Use `suppressHydrationWarning` on `html` tags carefully, but ensure `next/font` is used to prevent layout shifts (CLS).
+2.  **Sitemaps & Robots**: Always maintain `app/sitemap.js` and `app/robots.js` to ensure search engines can index the site efficiently.
+3.  **Canonical URLs**: Use the `metadata.alternates.canonical` property to prevent duplicate content issues.
