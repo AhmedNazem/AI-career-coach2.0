@@ -1,28 +1,18 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Button } from "./ui/button";
-import Image from "next/image";
+import ParticleWaves from "./ui/demo";
 
 const HeroSection = () => {
-  const imageRef = useRef(null);
-  useEffect(() => {
-    const imageElement = imageRef.current;
-    const handelScroll = () => {
-      const scrollPosition = window.scrollY;
-      const scrollThreshold = 100;
-      if (scrollPosition > scrollThreshold) {
-        imageElement.classList.add("scrolled");
-      } else {
-        imageElement.classList.remove("scrolled");
-      }
-    };
-    window.addEventListener("scroll", handelScroll);
-    return () => window.removeEventListener("scroll", handelScroll);
-  }, []);
   return (
-    <section className="w-full pt-36 md:pt-48 pb-10">
-      <div className="space-y-6 text-center">
+    <section className="relative w-full pt-36 md:pt-48 pb-32 md:pb-48">
+      {/* Particle Waves Background - extends beyond section */}
+      <div className="absolute inset-0 -bottom-40 md:-bottom-64 z-0 pointer-events-auto">
+        <ParticleWaves />
+      </div>
+
+      <div className="relative z-10 space-y-6 text-center">
         <div className="space-y-6 mx-auto">
           <h1 className="text-5xl font-bold md:text-6xl lg:text-7xl xl:text-8xl gradient-title">
             Your AI Career Coach for <br />
@@ -39,19 +29,6 @@ const HeroSection = () => {
               Get Started
             </Button>
           </Link>
-        </div>
-        {/* Image div 👇🏼 */}
-        <div className="hero-image-wrapper mt-5 md:mt-0">
-          <div ref={imageRef} className="hero-image">
-            <Image
-              src={"/intro2.png"}
-              width={1280}
-              height={720}
-              alt="Banner Coach "
-              className="rounded-lg shadow-2xl border mx-auto"
-              priority
-            />
-          </div>
         </div>
       </div>
     </section>
