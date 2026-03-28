@@ -135,3 +135,27 @@ body {
   transform: translateY(0) scale(1);
 }
 
+/* How It Works step scroll-reveal animation */
+.hiw-step {
+  opacity: 0;
+  transform: translateY(40px) scale(0.97);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hiw-step.hiw-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Timeline line grow animation */
+.hiw-line {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+}
+
+.hiw-line.hiw-line-grow {
+  transform: scaleY(1);
+}
+
