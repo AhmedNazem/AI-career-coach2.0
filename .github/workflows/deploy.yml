@@ -1,0 +1,40 @@
+name: Deploy to Production VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            # Go to the application directory on your VPS
+            cd /opt/career-coach-app
+
+            # Pull the latest changes from GitHub
+            git pull origin main
+
+            # Securely inject environment variables from GitHub Secrets
+            # (You should add these secrets in your GitHub Repository Settings)
+            echo "REDIS_URL=${{ secrets.REDIS_URL }}" > .env.local
+            echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env.local
+            echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}" >> .env.local
+            echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> .env.local
+
+            # Rebuild and restart the Docker containers in detached mode
+            docker-compose up --build -d
+
+            # Clean up old, unused Docker images to save disk space
+            docker image prune -af
