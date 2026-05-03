@@ -6,9 +6,7 @@ import { revalidatePath } from "next/cache";
 import Stripe from "stripe";
 
 // Only initialize Stripe if the key is available
-const stripe = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY)
-  : null;
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 export async function createCheckoutSession(type, id) {
   if (!stripe) {
@@ -34,8 +32,6 @@ export async function createCheckoutSession(type, id) {
   };
 
   if (type === "SUBSCRIPTION") {
-    // In a real app, these IDs would come from your Stripe Dashboard
-    // For now, these are placeholders. User must replace them.
     const priceIds = {
       STARTER: "price_1TEInlL3MBb4rYooe1ZHltok",
       PRO: "price_1TEIw1L3MBb4rYoo9gkjSGjq",
@@ -64,10 +60,7 @@ export async function createCheckoutSession(type, id) {
   }
 
   try {
-    // Determine mode: SUBSCRIPTION type uses 'subscription'
-    // Also use 'subscription' for TOKENS as the current price IDs are set up as recurring
-    const isSubscription =
-      type === "SUBSCRIPTION" || ["1", "5", "10"].includes(id);
+    const isSubscription = type === "SUBSCRIPTION" || type === "TOKENS";
     const mode = isSubscription ? "subscription" : "payment";
 
     const session = await stripe.checkout.sessions.create({
@@ -143,12 +136,6 @@ export async function verifySession(sessionId) {
       return { success: false, error: "Unauthorized session" };
     }
 
-    // Check if already processed (idempotency)
-    // We can check if the subscription matches or if we should use a more robust way
-    // For now, let's just update and let Prisma handle it or trust the session status
-    // To be more robust, we would store Stripe Session IDs in the DB to prevent double-crediting
-    // Since the user asked for "sync", we will perform the update if it hasn't happened.
-
     if (type === "SUBSCRIPTION") {
       if (user.subscription === targetId) {
         return { success: true, message: "Already processed" };
@@ -167,12 +154,6 @@ export async function verifySession(sessionId) {
         },
       });
     } else if (type === "TOKENS") {
-      // For tokens, it's harder to check if "already processed" without a transaction log.
-      // But for the sake of "sync" now, we'll increment.
-      // NOTE: The webhook also does this. Stripe webhooks are usually fast.
-      // A better way is to store the session_id in a 'Payments' table.
-
-      // For now, we'll assume the user just wants the tokens credited.
       await db.user.update({
         where: { id: userId },
         data: {

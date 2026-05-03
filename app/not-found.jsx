@@ -37,12 +37,12 @@ export default function NotFound() {
             4
           </span>
         </h1>
-        <p className="text-2xl font-semibold text-cyan-300 mt-4 mb-8 ">
+        <p className="text-2xl font-semibold text-cyan-600 dark:text-cyan-300 mt-4 mb-8 ">
           Oops! Page not found
         </p>
         <Link
           href="/"
-          className="px-6 py-3 bg-cyan-300 text-black rounded-lg hover:bg-cyan-400 transition-colors duration-300"
+          className="px-6 py-3 bg-cyan-600 dark:bg-cyan-300 text-white dark:text-black rounded-lg hover:bg-cyan-700 dark:hover:bg-cyan-400 transition-colors duration-300"
         >
           Go back home
         </Link>

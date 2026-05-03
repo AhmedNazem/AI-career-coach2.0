@@ -77,7 +77,9 @@ The user inputs their "Goal". Gemini analyzes their current Prisma profile skill
 To keep the application robust, all new features MUST follow these established patterns:
 
 ### **A. Standard API Response Pattern**
+
 All Server Actions must return a consistent object structure:
+
 ```javascript
 {
   success: true/false,
@@ -87,13 +89,17 @@ All Server Actions must return a consistent object structure:
 ```
 
 ### **B. Gemini Prompting & JSON Safety**
+
 When requesting JSON from Gemini:
+
 1.  **Explicit Prompting:** Requesting "ONLY RAW JSON" without markdown backticks.
 2.  **Sanitization:** Use `response.replace(/```json|```/g, "").trim()` before parsing.
 3.  **Validation:** Use **Zod** schema validation immediately after parsing to ensure result integrity.
 
 ### **C. Background Jobs (Inngest)**
+
 For tasks that take > 10 seconds or are triggered by events (e.g., weekly reminders):
+
 - Use `lib/inngest/client.js` to define events.
 - Create functions in `app/api/inngest/route.js`.
 
@@ -104,7 +110,9 @@ For tasks that take > 10 seconds or are triggered by events (e.g., weekly remind
 To ensure the product is discoverable, we follow these technical SEO patterns:
 
 ### **A. Global Metadata Strategy**
+
 Configure the root `layout.jsx` with dynamic title templates and OpenGraph images:
+
 ```javascript
 export const metadata = {
   title: { default: "Sensai", template: "%s | Sensai" },
@@ -113,6 +121,7 @@ export const metadata = {
 ```
 
 ### **B. Automated Indexing**
+
 - **`app/sitemap.js`**: Generates a dynamic XML sitemap of all public-facing routes.
 - **`app/robots.js`**: Instructs search engines on which paths to crawl (allowing all except `/api` and internal auth).
 

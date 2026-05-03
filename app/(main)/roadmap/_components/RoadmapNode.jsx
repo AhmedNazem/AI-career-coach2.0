@@ -12,7 +12,7 @@ const RoadmapNode = ({ data }) => {
       
       <div className="flex flex-col gap-2">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold text-wrap leading-tight text-white">
+          <h3 className="text-sm font-semibold text-wrap leading-tight text-foreground">
             {data.title}
           </h3>
           <Circle className="w-4 h-4 text-cyan-500/50 mt-1 flex-shrink-0" />

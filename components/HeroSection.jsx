@@ -18,14 +18,14 @@ const HeroSection = () => {
             Your AI Career Coach for <br />
             Professional success
           </h1>
-          <p className="mx-auto max-w-[600px] text-cyan-100 md:text-xl">
+          <p className="mx-auto max-w-[600px] text-cyan-700 dark:text-cyan-100 md:text-xl">
             Advance your career with personalized guidance, interview prep , and
             AI-powered tools for job success
           </p>
         </div>
         <div className="flex justify-center space-x-4">
           <Link href={"/dashboard"}>
-            <Button size="lg" className="px-8 hover:bg-cyan-100">
+            <Button size="lg" className="px-8">
               Get Started
             </Button>
           </Link>

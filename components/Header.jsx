@@ -1,8 +1,9 @@
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
+import HeaderClient from "@/components/HeaderClient";
 import {
   ChevronDown,
   FileText,
@@ -111,26 +112,7 @@ const Header = async () => {
             </DropdownMenu>
           </SignedIn>
 
-          <SignedOut>
-            <SignInButton mode="modal" asChild>
-              <span>
-                <Button variant="outline">Sign In</Button>
-              </span>
-            </SignInButton>
-          </SignedOut>
-
-          <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-10 h-10",
-                  userButtonPopoverCard: "shadow-xl",
-                  userPreviewMainIdentifier: "font-semibold",
-                },
-              }}
-              afterSignOutUrl="/"
-            />
-          </SignedIn>
+          <HeaderClient />
         </div>
       </nav>
     </header>

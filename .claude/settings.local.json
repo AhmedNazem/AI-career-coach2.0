@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\SherdllStore\\\\Desktop\\\\AI-Career-Coach-main\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(Test-Path C:\\\\Users\\\\SherdllStore\\\\Desktop\\\\AI-Career-Coach-main\\\\src *)"
+    ]
+  }
+}

@@ -1,9 +1,17 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 const ShaderBackground = () => {
   const canvasRef = useRef(null);
+  const { resolvedTheme } = useTheme();
+  const themeRef = useRef(resolvedTheme);
+
+  // Keep themeRef in sync so the render loop always reads the latest value
+  useEffect(() => {
+    themeRef.current = resolvedTheme;
+  }, [resolvedTheme]);
 
   const vsSource = `
     attribute vec4 aVertexPosition;
@@ -16,6 +24,8 @@ const ShaderBackground = () => {
     precision highp float;
     uniform vec2 iResolution;
     uniform float iTime;
+    uniform vec4 uBgColor1;
+    uniform vec4 uBgColor2;
 
     const float overallSpeed = 0.2;
     const float gridSmoothWidth = 0.015;
@@ -79,8 +89,6 @@ const ShaderBackground = () => {
       space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
       vec4 lines = vec4(0.0);
-      vec4 bgColor1 = vec4(0.03, 0.05, 0.08, 1.0);
-      vec4 bgColor2 = vec4(0.05, 0.12, 0.15, 1.0);
 
       for(int l = 0; l < linesPerGroup; l++) {
         float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -100,10 +108,10 @@ const ShaderBackground = () => {
         lines += line * lineColor * rand;
       }
 
-      fragColor = mix(bgColor1, bgColor2, uv.x);
-      fragColor *= verticalFade;
-      fragColor.a = 1.0;
-      fragColor += lines;
+      vec4 baseColor = mix(uBgColor1, uBgColor2, uv.x);
+      fragColor = baseColor * verticalFade;
+      fragColor.a = verticalFade;
+      fragColor += lines * verticalFade;
 
       gl_FragColor = fragColor;
     }
@@ -113,33 +121,25 @@ const ShaderBackground = () => {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
       console.error("Shader compile error: ", gl.getShaderInfoLog(shader));
       gl.deleteShader(shader);
       return null;
     }
-
     return shader;
   };
 
   const initShaderProgram = (gl, vsSource, fsSource) => {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-
     const shaderProgram = gl.createProgram();
     gl.attachShader(shaderProgram, vertexShader);
     gl.attachShader(shaderProgram, fragmentShader);
     gl.linkProgram(shaderProgram);
-
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-      console.error(
-        "Shader program link error: ",
-        gl.getProgramInfoLog(shaderProgram)
-      );
+      console.error("Shader program link error: ", gl.getProgramInfoLog(shaderProgram));
       return null;
     }
-
     return shaderProgram;
   };
 
@@ -167,6 +167,8 @@ const ShaderBackground = () => {
       uniformLocations: {
         resolution: gl.getUniformLocation(shaderProgram, "iResolution"),
         time: gl.getUniformLocation(shaderProgram, "iTime"),
+        bgColor1: gl.getUniformLocation(shaderProgram, "uBgColor1"),
+        bgColor2: gl.getUniformLocation(shaderProgram, "uBgColor2"),
       },
     };
 
@@ -184,30 +186,29 @@ const ShaderBackground = () => {
 
     let animationId;
     let startTime = Date.now();
+
     const render = () => {
       const currentTime = (Date.now() - startTime) / 1000;
+      const isDark = themeRef.current !== "light";
 
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 0.0);
       gl.clear(gl.COLOR_BUFFER_BIT);
-
       gl.useProgram(programInfo.program);
 
-      gl.uniform2f(
-        programInfo.uniformLocations.resolution,
-        canvas.width,
-        canvas.height
-      );
+      // Set background colors based on current theme
+      if (isDark) {
+        gl.uniform4f(programInfo.uniformLocations.bgColor1, 0.03, 0.05, 0.08, 1.0);
+        gl.uniform4f(programInfo.uniformLocations.bgColor2, 0.05, 0.12, 0.15, 1.0);
+      } else {
+        gl.uniform4f(programInfo.uniformLocations.bgColor1, 0.94, 0.98, 1.0, 1.0);
+        gl.uniform4f(programInfo.uniformLocations.bgColor2, 0.88, 0.97, 0.99, 1.0);
+      }
+
+      gl.uniform2f(programInfo.uniformLocations.resolution, canvas.width, canvas.height);
       gl.uniform1f(programInfo.uniformLocations.time, currentTime);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexPosition,
-        2,
-        gl.FLOAT,
-        false,
-        0,
-        0
-      );
+      gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
 
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -220,7 +221,7 @@ const ShaderBackground = () => {
       cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <canvas
