@@ -2,6 +2,8 @@ import { getResume } from "@/actions/resume";
 import React from "react";
 import ResumeBuilder from "./_components/ResumeBuilder";
 
+export const dynamic = 'force-dynamic';
+
 const ResumePage = async () => {
   const result = await getResume();
   if (!result.success) throw new Error(result.error || "Failed to load resume");
